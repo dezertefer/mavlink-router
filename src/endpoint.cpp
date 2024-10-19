@@ -1381,10 +1381,10 @@ ssize_t UdpEndpoint::_read_msg(uint8_t *buf, size_t len)
 int UdpEndpoint::write_msg(const struct buffer *pbuf)
 {
     // Check if the message can be sent based on rate limits
-	if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
-		log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
-		return -EAGAIN; // Indicate that the message cannot be sent
-	}
+    if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
+        log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+        return -EAGAIN; // Indicate that the message cannot be sent
+    }
 
     struct sockaddr *sock;
     socklen_t addrlen;
@@ -1421,7 +1421,16 @@ int UdpEndpoint::write_msg(const struct buffer *pbuf)
             log_error("UDP %s: Error sending udp packet (%m)", _name.c_str());
         }
         return -errno;
-    };
+    }
+
+    // Successfully sent the message; update last_sent_time for msg_id 30
+    if (pbuf->curr.msg_id == 30) {
+        auto now = std::chrono::steady_clock::now();
+        auto it = rate_limits.find(pbuf->curr.msg_id);
+        if (it != rate_limits.end()) {
+            it->second.last_sent_time = now; // Update last sent time for this msg_id
+        }
+    }
 
     _stat.write.total++;
     _stat.write.bytes += pbuf->len;
