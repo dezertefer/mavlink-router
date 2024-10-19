@@ -727,7 +727,7 @@ void Endpoint::log_aggregate(unsigned int interval_sec)
         _incomplete_msgs = 0;
     }
 }
-
+/*
 bool Endpoint::can_send_msg(uint32_t msg_id) {
     auto it = rate_limits.find(msg_id);
     float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
@@ -745,6 +745,22 @@ bool Endpoint::can_send_msg(uint32_t msg_id) {
 
     return true; // No rate limit or passed
 };
+*/
+bool Endpoint::can_send_msg(uint32_t msg_id) {
+    auto it = rate_limits.find(msg_id);
+    if (it != rate_limits.end()) {
+        const RateLimit &rate_limit = it->second;
+        auto now = std::chrono::steady_clock::now();
+        auto time_since_last_send = std::chrono::duration_cast<std::chrono::milliseconds>(now - rate_limit.last_sent_time).count();
+
+        if (time_since_last_send < (1000.0f / rate_limit.frequency_hz)) {
+            log_debug("Rate limit for msg_id %u: time since last send = %lld ms, limit = %f Hz", msg_id, time_since_last_send, rate_limit.frequency_hz);
+            return false; // Rate limit exceeded
+        }
+    }
+
+    return true; // Message can be sent
+}
 
 UartEndpoint::UartEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_UART, std::move(name)}
