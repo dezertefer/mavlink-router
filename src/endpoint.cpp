@@ -51,7 +51,7 @@
 #define TX_BUF_MAX_SIZE (8U * 1024U)
 
 #define UART_BAUD_RETRY_SEC 5
-const float DEFAULT_RATE_HZ = 2.0f;
+
 
 uint16_t Endpoint::sniffer_sysid = 0;
 
@@ -1002,67 +1002,7 @@ ssize_t UartEndpoint::_read_msg(uint8_t *buf, size_t len)
     return r;
 }
 
-int UdpEndpoint::write_msg(const struct buffer *pbuf)
-{
-    // Check if the message can be sent based on rate limits
-    if (!can_send_msg(pbuf->curr.msg_id)) {
-        log_debug("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
-        return -EAGAIN; // Indicate that the message cannot be sent
-    }
 
-    struct sockaddr *sock;
-    socklen_t addrlen;
-
-    if (fd < 0) {
-        log_error("UDP %s: Trying to write invalid fd", _name.c_str());
-        return -EINVAL;
-    }
-
-    /* TODO: send any pending data */
-    if (tx_buf.len > 0) {
-        // Handle sending any pending data if necessary
-    }
-
-    bool sock_connected = false;
-    if (this->is_ipv6) {
-        addrlen = sizeof(sockaddr6);
-        sock = (struct sockaddr *)&sockaddr6;
-        sock_connected = sockaddr6.sin6_port != 0;
-    } else {
-        addrlen = sizeof(sockaddr);
-        sock = (struct sockaddr *)&sockaddr;
-        sock_connected = sockaddr.sin_port != 0;
-    }
-
-    if (!sock_connected) {
-        log_trace("UDP %s: No one ever connected to us. No one to write for", _name.c_str());
-        return 0;
-    }
-
-    ssize_t r = ::sendto(fd, pbuf->data, pbuf->len, 0, sock, addrlen);
-    if (r == -1) {
-        if (errno != EAGAIN && errno != ECONNREFUSED && errno != ENETUNREACH) {
-            log_error("UDP %s: Error sending udp packet (%m)", _name.c_str());
-        }
-        return -errno;
-    };
-
-    _stat.write.total++;
-    _stat.write.bytes += pbuf->len;
-
-    /* Incomplete packet, we warn and discard the rest */
-    if (r != (ssize_t)pbuf->len) {
-        _incomplete_msgs++;
-        log_debug("UDP %s: Discarding packet, incomplete write %zd but len=%u",
-                  _name.c_str(),
-                  r,
-                  pbuf->len);
-    }
-
-    log_trace("UDP [%d]%s: Wrote %zd bytes", fd, _name.c_str(), r);
-
-    return r;
-}
 
 int UartEndpoint::add_speeds(const std::vector<speed_t> &bauds)
 {
@@ -1360,6 +1300,12 @@ ssize_t UdpEndpoint::_read_msg(uint8_t *buf, size_t len)
 
 int UdpEndpoint::write_msg(const struct buffer *pbuf)
 {
+    // Check if the message can be sent based on rate limits
+    if (!can_send_msg(pbuf->curr.msg_id)) {
+        log_debug("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+        return -EAGAIN; // Indicate that the message cannot be sent
+    }
+
     struct sockaddr *sock;
     socklen_t addrlen;
 
@@ -1370,7 +1316,7 @@ int UdpEndpoint::write_msg(const struct buffer *pbuf)
 
     /* TODO: send any pending data */
     if (tx_buf.len > 0) {
-        ;
+        // Handle sending any pending data if necessary
     }
 
     bool sock_connected = false;
