@@ -1374,7 +1374,7 @@ int UdpEndpoint::write_msg(const struct buffer *pbuf)
 {
     // Check if the message can be sent based on rate limits
 	if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
-		log_debug("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+		log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
 		return -EAGAIN; // Indicate that the message cannot be sent
 	}
 
