@@ -141,6 +141,7 @@ struct _packed_ mavlink_router_mavlink1_header {
 
 class Endpoint : public Pollable {
 public:
+    std::unordered_map<uint32_t, RateLimit> rate_limits;
     /*
      * Success returns for @read_msg()
      */
@@ -301,7 +302,6 @@ private:
     std::vector<uint8_t> _blocked_incoming_src_comps;
     std::vector<uint8_t> _allowed_incoming_src_systems;
     std::vector<uint8_t> _blocked_incoming_src_systems;
-    std::unordered_map<uint32_t, RateLimit> rate_limits;
 };
 
 class UartEndpoint : public Endpoint {
