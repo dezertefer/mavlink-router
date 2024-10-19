@@ -1055,11 +1055,7 @@ bool UartEndpoint::validate_config(const UartEndpointConfig &config)
     return true;
 }
 
-bool UartEndpoint::can_send_msg(uint32_t msg_id) {
-    return true; // Always allow sending messages
-}
-
-UartEndpoint::~UartEndpoint() = default;
+//UartEndpoint::~UartEndpoint() = default;
 
 UdpEndpoint::UdpEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_UDP, std::move(name)}
