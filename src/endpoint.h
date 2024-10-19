@@ -308,7 +308,7 @@ private:
 class UartEndpoint : public Endpoint {
 public:
     UartEndpoint(std::string name);
-    ~UartEndpoint() override = default;
+    ~UartEndpoint() override;
     
 	
 	//virtual ~UartEndpoint() = default;

@@ -1055,6 +1055,9 @@ bool UartEndpoint::validate_config(const UartEndpointConfig &config)
     return true;
 }
 
+UartEndpoint::~UartEndpoint() {
+    // Cleanup if necessary
+}
 //UartEndpoint::~UartEndpoint() = default;
 
 UdpEndpoint::UdpEndpoint(std::string name)
