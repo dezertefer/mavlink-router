@@ -51,7 +51,7 @@
 #define TX_BUF_MAX_SIZE (8U * 1024U)
 
 #define UART_BAUD_RETRY_SEC 5
-
+#define DEFAULT_RATE_HZ 2.0f;
 
 uint16_t Endpoint::sniffer_sysid = 0;
 
@@ -727,10 +727,10 @@ void Endpoint::log_aggregate(unsigned int interval_sec)
         _incomplete_msgs = 0;
     }
 }
-/*
+
 bool Endpoint::can_send_msg(uint32_t msg_id) {
     auto it = rate_limits.find(msg_id);
-    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
+    float frequency_hz = DEFAULT_RATE_HZ;
     
     auto now = std::chrono::steady_clock::now();
     float interval = 1.0 / frequency_hz;
@@ -745,7 +745,7 @@ bool Endpoint::can_send_msg(uint32_t msg_id) {
 
     return true; // No rate limit or passed
 };
-*/
+/*
 bool Endpoint::can_send_msg(uint32_t msg_id) {
     auto it = rate_limits.find(msg_id);
     if (it != rate_limits.end()) {
@@ -761,6 +761,7 @@ bool Endpoint::can_send_msg(uint32_t msg_id) {
 
     return true; // Message can be sent
 }
+*/
 
 UartEndpoint::UartEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_UART, std::move(name)}

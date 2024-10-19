@@ -302,7 +302,6 @@ private:
     std::vector<uint8_t> _allowed_incoming_src_systems;
     std::vector<uint8_t> _blocked_incoming_src_systems;
     std::unordered_map<uint32_t, RateLimit> rate_limits;
-    static constexpr float DEFAULT_RATE_HZ = 2.0f; // Default rate of 2 Hz
 };
 
 class UartEndpoint : public Endpoint {
