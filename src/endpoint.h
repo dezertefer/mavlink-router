@@ -309,7 +309,7 @@ class UartEndpoint : public Endpoint {
 public:
     UartEndpoint(std::string name);
     ~UartEndpoint() override = default;
-
+    
     int write_msg(const struct buffer *pbuf) override;
     int flush_pending_msgs() override { return -ENOSYS; }
 

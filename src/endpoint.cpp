@@ -728,6 +728,24 @@ void Endpoint::log_aggregate(unsigned int interval_sec)
     }
 }
 
+bool Endpoint::can_send_msg(uint32_t msg_id) {
+    auto it = rate_limits.find(msg_id);
+    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
+    
+    auto now = std::chrono::steady_clock::now();
+    float interval = 1.0 / frequency_hz;
+
+    if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
+        return false; // Rate limit exceeded
+    }
+
+    if (it != rate_limits.end()) {
+        it->second.last_sent_time = now; // Update last sent time
+    }
+
+    return true; // No rate limit or passed
+};
+
 UartEndpoint::UartEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_UART, std::move(name)}
 {
@@ -1036,6 +1054,12 @@ bool UartEndpoint::validate_config(const UartEndpointConfig &config)
 
     return true;
 }
+
+bool UartEndpoint::can_send_msg(uint32_t msg_id) {
+    return true; // Always allow sending messages
+}
+
+UartEndpoint::~UartEndpoint() = default;
 
 UdpEndpoint::UdpEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_UDP, std::move(name)}
@@ -1418,23 +1442,7 @@ bool UdpEndpoint::validate_config(const UdpEndpointConfig &config)
     return true;
 }
 
-bool Endpoint::can_send_msg(uint32_t msg_id) {
-    auto it = rate_limits.find(msg_id);
-    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
-    
-    auto now = std::chrono::steady_clock::now();
-    float interval = 1.0 / frequency_hz;
 
-    if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
-        return false; // Rate limit exceeded
-    }
-
-    if (it != rate_limits.end()) {
-        it->second.last_sent_time = now; // Update last sent time
-    }
-
-    return true; // No rate limit or passed
-};
 
 TcpEndpoint::TcpEndpoint(std::string name)
     : Endpoint{ENDPOINT_TYPE_TCP, std::move(name)}
