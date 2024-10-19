@@ -141,7 +141,7 @@ struct _packed_ mavlink_router_mavlink1_header {
 
 class Endpoint : public Pollable {
 public:
-    std::unordered_map<uint32_t, RateLimit> rate_limits;
+
     /*
      * Success returns for @read_msg()
      */
@@ -255,6 +255,8 @@ public:
     // An endpoint with this system id becomes a "sniffer" and all
     // messages are accepted.
     static uint16_t sniffer_sysid;
+	
+	std::unordered_map<uint32_t, RateLimit> rate_limits;
 
 protected:
     virtual int read_msg(struct buffer *pbuf);
