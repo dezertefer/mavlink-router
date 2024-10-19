@@ -733,10 +733,10 @@ bool Endpoint::can_send_msg(uint32_t msg_id) {
 
     // Log the rate limit check
     auto it = rate_limits.find(msg_id);
-    log_info("Checking rate limit for msg_id %u: last_sent_time = %lld, current_time = %lld",
+ /*   log_info("Checking rate limit for msg_id %u: last_sent_time = %lld, current_time = %lld",
               msg_id,
               it != rate_limits.end() ? it->second.last_sent_time.time_since_epoch().count() : 0,
-              now.time_since_epoch().count());
+              now.time_since_epoch().count());*/
 
     float frequency_hz = DEFAULT_RATE_HZ;
     float interval = 1.0 / frequency_hz;
@@ -1382,7 +1382,7 @@ int UdpEndpoint::write_msg(const struct buffer *pbuf)
 {
     // Check if the message can be sent based on rate limits
     if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
-        log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+        //log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
         return -EAGAIN; // Indicate that the message cannot be sent
     }
 
