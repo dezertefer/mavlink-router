@@ -18,7 +18,7 @@
 #pragma once
 
 #include <common/conf_file.h>
-#include <common/mavlink
+#include <common/mavlink>
 #include <common/mavlink.h>
 
 #include <memory>
