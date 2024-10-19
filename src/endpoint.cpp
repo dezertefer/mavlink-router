@@ -51,6 +51,7 @@
 #define TX_BUF_MAX_SIZE (8U * 1024U)
 
 #define UART_BAUD_RETRY_SEC 5
+const float DEFAULT_RATE_HZ = 2.0f;
 
 uint16_t Endpoint::sniffer_sysid = 0;
 

@@ -24,6 +24,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_map>
+#include <chrono>
 
 #include "comm.h"
 #include "pollable.h"
@@ -135,23 +137,7 @@ struct _packed_ mavlink_router_mavlink1_header {
     uint8_t msgid;
 };
 
-bool Endpoint::can_send_msg(uint32_t msg_id) {
-    auto it = rate_limits.find(msg_id);
-    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
-    
-    auto now = std::chrono::steady_clock::now();
-    float interval = 1.0 / frequency_hz;
 
-    if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
-        return false; // Rate limit exceeded
-    }
-
-    if (it != rate_limits.end()) {
-        it->second.last_sent_time = now; // Update last sent time
-    }
-
-    return true; // No rate limit or passed
-};
 
 class Endpoint : public Pollable {
 public:
@@ -385,6 +371,24 @@ private:
     bool is_ipv6;
     struct sockaddr_in sockaddr;
     struct sockaddr_in6 sockaddr6;
+};
+
+bool Endpoint::can_send_msg(uint32_t msg_id) {
+    auto it = rate_limits.find(msg_id);
+    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
+    
+    auto now = std::chrono::steady_clock::now();
+    float interval = 1.0 / frequency_hz;
+
+    if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
+        return false; // Rate limit exceeded
+    }
+
+    if (it != rate_limits.end()) {
+        it->second.last_sent_time = now; // Update last sent time
+    }
+
+    return true; // No rate limit or passed
 };
 
 class TcpEndpoint : public Endpoint {
