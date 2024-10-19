@@ -18,6 +18,7 @@
 #pragma once
 
 #include <common/conf_file.h>
+#include <common/mavlink
 #include <common/mavlink.h>
 
 #include <memory>
@@ -135,11 +136,37 @@ struct _packed_ mavlink_router_mavlink1_header {
     uint8_t msgid;
 };
 
+bool Endpoint::can_send_msg(uint32_t msg_id) {
+    auto it = rate_limits.find(msg_id);
+    float frequency_hz = (it != rate_limits.end()) ? it->second.frequency_hz : DEFAULT_RATE_HZ;
+    
+    auto now = std::chrono::steady_clock::now();
+    float interval = 1.0 / frequency_hz;
+
+    if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
+        return false; // Rate limit exceeded
+    }
+
+    if (it != rate_limits.end()) {
+        it->second.last_sent_time = now; // Update last sent time
+    }
+
+    return true; // No rate limit or passed
+};
+
 class Endpoint : public Pollable {
 public:
     /*
      * Success returns for @read_msg()
      */
+	bool can_send_msg(uint32_t msg_id); 
+	 
+	struct RateLimit {
+    uint32_t msg_id;
+    float frequency_hz;
+    std::chrono::steady_clock::time_point last_sent_time;
+};
+	 
     enum read_msg_result {
         ReadOk = 1,
         ReadUnkownMsg,
@@ -289,6 +316,8 @@ private:
     std::vector<uint8_t> _blocked_incoming_src_comps;
     std::vector<uint8_t> _allowed_incoming_src_systems;
     std::vector<uint8_t> _blocked_incoming_src_systems;
+    std::unordered_map<uint32_t, RateLimit> rate_limits;
+    static constexpr float DEFAULT_RATE_HZ = 2.0f; // Default rate of 2 Hz
 };
 
 class UartEndpoint : public Endpoint {
