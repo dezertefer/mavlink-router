@@ -149,9 +149,9 @@ public:
 	 
 	struct RateLimit {
     uint32_t msg_id;
-    float frequency_hz;
+    float rate_hz;
     std::chrono::steady_clock::time_point last_sent_time;
-};
+	};
 	 
     enum read_msg_result {
         ReadOk = 1,

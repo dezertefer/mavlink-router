@@ -207,7 +207,7 @@ Endpoint::Endpoint(std::string type, std::string name)
 	
 	
 	    // Initialize default rate limits for common message IDs
-    for (uint32_t msg_id : {1, 2, 3}) { // Replace with actual message IDs
+    for (uint32_t msg_id : {30}) { // Replace with actual message IDs
         rate_limits[msg_id] = {msg_id, DEFAULT_RATE_HZ, std::chrono::steady_clock::now()};
     }
 }
