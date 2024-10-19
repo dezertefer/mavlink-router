@@ -729,11 +729,19 @@ void Endpoint::log_aggregate(unsigned int interval_sec)
 }
 
 bool Endpoint::can_send_msg(uint32_t msg_id) {
-    auto it = rate_limits.find(msg_id);
+    
+	log_info("Checking rate limit for msg_id %u: last_sent_time = %lld, current_time = %lld",
+          msg_id,
+          rate_limit.last_sent_time.time_since_epoch().count(),
+          now.time_since_epoch().count());
+		  
+	auto it = rate_limits.find(msg_id);
     float frequency_hz = DEFAULT_RATE_HZ;
     
     auto now = std::chrono::steady_clock::now();
     float interval = 1.0 / frequency_hz;
+
+	
 
     if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
         return false; // Rate limit exceeded
