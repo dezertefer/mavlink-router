@@ -1020,7 +1020,39 @@ ssize_t UartEndpoint::_read_msg(uint8_t *buf, size_t len)
     return r;
 }
 
+int UartEndpoint::write_msg(const struct buffer *pbuf)
+{
+    if (fd < 0) {
+        log_error("UART %s: Trying to write invalid fd", _name.c_str());
+        return -EINVAL;
+    }
 
+    /* TODO: send any pending data */
+    if (tx_buf.len > 0) {
+        ;
+    }
+
+    ssize_t r = ::write(fd, pbuf->data, pbuf->len);
+    if (r == -1 && errno == EAGAIN) {
+        return -EAGAIN;
+    }
+
+    _stat.write.total++;
+    _stat.write.bytes += pbuf->len;
+
+    /* Incomplete packet, we warn and discard the rest */
+    if (r != (ssize_t)pbuf->len) {
+        _incomplete_msgs++;
+        log_debug("UART %s: Discarding packet, incomplete write %zd but len=%u",
+                  _name.c_str(),
+                  r,
+                  pbuf->len);
+    }
+
+    log_trace("UART [%d]%s: Wrote %zd bytes", fd, _name.c_str(), r);
+
+    return r;
+}
 
 int UartEndpoint::add_speeds(const std::vector<speed_t> &bauds)
 {
