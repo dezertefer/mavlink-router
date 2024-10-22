@@ -1181,6 +1181,8 @@ bool UdpEndpoint::setup(UdpEndpointConfig conf)
         this->filter_add_blocked_in_src_sys(src_sys);
     }
 
+    this->config.limit_attitude_rate = conf.limit_attitude_rate;
+	
     this->_group_name = conf.group;
 
     return true;
@@ -1382,7 +1384,7 @@ ssize_t UdpEndpoint::_read_msg(uint8_t *buf, size_t len)
 int UdpEndpoint::write_msg(const struct buffer *pbuf)
 {
     // Check if the message can be sent based on rate limits
-	if (config.limit_attitude_rate) {
+	if (this->config.limit_attitude_rate) {
 	    if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
 	        //log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
 	        return -EAGAIN; // Indicate that the message cannot be sent
