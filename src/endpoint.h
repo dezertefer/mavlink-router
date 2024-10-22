@@ -77,8 +77,8 @@ struct UdpEndpointConfig {
     std::vector<uint8_t> block_src_comp_in;
     std::vector<uint8_t> allow_src_sys_in;
     std::vector<uint8_t> block_src_sys_in;
-    std::vector<bool> limit_attitude_rate;
     std::string group;
+    bool limit_attitude_rate;
 };
 
 struct TcpEndpointConfig {
