@@ -375,6 +375,7 @@ private:
     bool is_ipv6;
     struct sockaddr_in sockaddr;
     struct sockaddr_in6 sockaddr6;
+    UdpEndpointConfig config;
 };
 
 
