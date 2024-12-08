@@ -1,3 +1,0 @@
-#!/bin/bash
-
-exec i686-linux-gnu-pkg-config --define-variable=prefix=/usr "$@"

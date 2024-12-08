@@ -1,4 +1,0 @@
-option('systemdsystemunitdir',
-       description: 'systemd unit directory',
-       type: 'string',
-       value: 'auto')
