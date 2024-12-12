@@ -737,10 +737,11 @@ bool Endpoint::can_send_msg(uint32_t msg_id, bool tcp_udp_type) {
     auto now = std::chrono::steady_clock::now(); // Declare now at the start
 
     // Log the rate limit check
+	auto it;
 	if(tcp_udp_type){
-		auto it = rate_limits_tcp.find(msg_id);
+		it = rate_limits_tcp.find(msg_id);
 	}else{
-		auto it = rate_limits.find(msg_id);
+		it = rate_limits.find(msg_id);
 	}
  /*   log_info("Checking rate limit for msg_id %u: last_sent_time = %lld, current_time = %lld",
               msg_id,
