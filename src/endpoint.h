@@ -259,6 +259,7 @@ public:
     static uint16_t sniffer_sysid;
 	
 	std::unordered_map<uint32_t, RateLimit> rate_limits;
+	std::unordered_map<uint32_t, RateLimit> rate_limits_tcp;
 
 protected:
     virtual int read_msg(struct buffer *pbuf);
