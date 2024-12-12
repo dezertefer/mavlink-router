@@ -212,6 +212,9 @@ Endpoint::Endpoint(std::string type, std::string name)
     for (uint32_t msg_id : {30}) { // Replace with actual message IDs
         rate_limits[msg_id] = {msg_id, DEFAULT_RATE_HZ, std::chrono::steady_clock::now()};
     }
+    for (uint32_t msg_id : {30}) { // Replace with actual message IDs
+        rate_limits_tcp[msg_id] = {msg_id, DEFAULT_RATE_HZ, std::chrono::steady_clock::now()};
+    }
 }
 
 Endpoint::~Endpoint()
