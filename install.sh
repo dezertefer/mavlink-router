@@ -18,9 +18,9 @@ sudo tee /etc/mavlink-router/main.conf > /dev/null <<EOL
 [General]
    TcpServerPort=5760
    ReportStats=false
-      BlockMsgIdIn = 66
-   BlockMsgIdOut = 66
-   LimitAttitudeRate = true
+   BlockMsgIdIn=66
+   BlockMsgIdOut=66
+   LimitAttitudeRate=true
 
 [UartEndpoint serial0]
    Device=/dev/serial0
@@ -34,10 +34,10 @@ sudo tee /etc/mavlink-router/main.conf > /dev/null <<EOL
 [UdpEndpoint missionPlanner]
    Mode=normal
    Port=15600
-   Address = 192.168.1.66
-   BlockMsgIdIn = 66
-   BlockMsgIdOut = 66
-   LimitAttitudeRate = true
+   Address=192.168.1.66
+   BlockMsgIdIn=66
+   BlockMsgIdOut=66
+   LimitAttitudeRate=true
 EOL
 
 # Create the systemd service file
