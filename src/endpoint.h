@@ -147,7 +147,7 @@ public:
     /*
      * Success returns for @read_msg()
      */
-	bool can_send_msg(uint32_t msg_id); 
+	bool can_send_msg(uint32_t msg_id, bool tcp_udp_type); 
 	 
 	struct RateLimit {
     uint32_t msg_id;

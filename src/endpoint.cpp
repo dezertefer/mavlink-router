@@ -733,11 +733,15 @@ void Endpoint::log_aggregate(unsigned int interval_sec)
     }
 }
 
-bool Endpoint::can_send_msg(uint32_t msg_id) {
+bool Endpoint::can_send_msg(uint32_t msg_id, bool tcp_udp_type) {
     auto now = std::chrono::steady_clock::now(); // Declare now at the start
 
     // Log the rate limit check
-    auto it = rate_limits.find(msg_id);
+	if(tcp_udp_type){
+		auto it = rate_limits_tcp.find(msg_id);
+	}else{
+		auto it = rate_limits.find(msg_id);
+	}
  /*   log_info("Checking rate limit for msg_id %u: last_sent_time = %lld, current_time = %lld",
               msg_id,
               it != rate_limits.end() ? it->second.last_sent_time.time_since_epoch().count() : 0,
@@ -750,11 +754,15 @@ bool Endpoint::can_send_msg(uint32_t msg_id) {
     if (std::chrono::duration<float>(now - (it != rate_limits.end() ? it->second.last_sent_time : now)).count() < interval) {
         return false; // Rate limit exceeded
     }
-
-    if (it != rate_limits.end()) {
-        it->second.last_sent_time = now; // Update last sent time
-    }
-
+	if(tcp_udp_type){
+		if (it != rate_limits_tcp.end()) {
+			it->second.last_sent_time = now; // Update last sent time
+		}
+	}else{
+		if (it != rate_limits.end()) {
+			it->second.last_sent_time = now; // Update last sent time
+		}	
+	}
     return true; // No rate limit or passed
 }
 
