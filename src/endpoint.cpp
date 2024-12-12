@@ -1531,6 +1531,8 @@ TcpEndpoint::~TcpEndpoint()
 
 bool TcpEndpoint::setup(TcpEndpointConfig conf)
 {
+    this->config = conf;
+	
     if (!this->validate_config(conf)) {
         return false;
     }
