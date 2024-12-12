@@ -118,6 +118,7 @@ const ConfFile::OptionsTable TcpEndpoint::option_table[] = {
     {"AllowSrcSysIn",   false,  ConfFile::parse_uint8_vector,   OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, allow_src_sys_in)},
     {"BlockSrcSysIn",   false,  ConfFile::parse_uint8_vector,   OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, block_src_sys_in)},
     {"group",           false,  ConfFile::parse_stdstring,      OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, group)},
+    {"LimitAttitudeRate", false, ConfFile::parse_bool, 		OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, limit_attitude_rate)},
     {}
 };
 // clang-format on
@@ -1577,6 +1578,7 @@ bool TcpEndpoint::setup(TcpEndpointConfig conf)
     }
 
     this->_group_name = conf.group;
+    this->config.limit_attitude_rate = conf.limit_attitude_rate;
 
     if (!this->open(conf.address, conf.port)) {
         log_warning("Could not open %s:%ld, re-trying every %d sec",
@@ -1763,9 +1765,14 @@ ssize_t TcpEndpoint::_read_msg(uint8_t *buf, size_t len)
 
 int TcpEndpoint::write_msg(const struct buffer *pbuf)
 {
+    if (this->config.limit_attitude_rate) {
+	if (pbuf->curr.msg_id == 30 && !can_send_msg(pbuf->curr.msg_id)) {
+	        //log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+	        return -EAGAIN; // Indicate that the message cannot be sent
+	}
+    }
     struct sockaddr *sock;
     socklen_t addrlen;
-
     if (fd < 0) {
         // skip this endpoint if not connected (e.g. during reconnect)
         return 0;
