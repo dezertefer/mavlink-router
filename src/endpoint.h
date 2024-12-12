@@ -421,4 +421,5 @@ private:
     int _retry_timeout = 0; // disable retry by default
     struct sockaddr_in sockaddr;
     struct sockaddr_in6 sockaddr6;
+    UdpEndpointConfig config;
 };
