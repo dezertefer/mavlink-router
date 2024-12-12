@@ -18,6 +18,9 @@ sudo tee /etc/mavlink-router/main.conf > /dev/null <<EOL
 [General]
    TcpServerPort=5760
    ReportStats=false
+      BlockMsgIdIn = 66
+   BlockMsgIdOut = 66
+   LimitAttitudeRate = true
 
 [UartEndpoint serial0]
    Device=/dev/serial0
