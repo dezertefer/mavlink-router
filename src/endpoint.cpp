@@ -1809,6 +1809,15 @@ int TcpEndpoint::write_msg(const struct buffer *pbuf)
         return -errno;
     };
 
+	    // Successfully sent the message; update last_sent_time for msg_id 30
+    if (pbuf->curr.msg_id == 30) {
+        auto now = std::chrono::steady_clock::now();
+        auto it = rate_limits.find(pbuf->curr.msg_id);
+        if (it != rate_limits.end()) {
+            it->second.last_sent_time = now; // Update last sent time for this msg_id
+        }
+    }
+	
     _stat.write.total++;
     _stat.write.bytes += pbuf->len;
 
