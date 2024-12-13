@@ -209,10 +209,10 @@ Endpoint::Endpoint(std::string type, std::string name)
 	
 	
 	    // Initialize default rate limits for common message IDs
-    for (uint32_t msg_id : {30}) { // Replace with actual message IDs
+    for (uint32_t msg_id : {30, 132}) { // Replace with actual message IDs
         rate_limits[msg_id] = {msg_id, DEFAULT_RATE_HZ, std::chrono::steady_clock::now()};
     }
-    for (uint32_t msg_id : {30}) { // Replace with actual message IDs
+    for (uint32_t msg_id : {30, 132}) { // Replace with actual message IDs
         rate_limits_tcp[msg_id] = {msg_id, DEFAULT_RATE_HZ, std::chrono::steady_clock::now()};
     }
 }
@@ -1743,7 +1743,14 @@ fail:
 
 ssize_t TcpEndpoint::_read_msg(uint8_t *buf, size_t len)
 {
-    struct sockaddr *sock;
+	if (this->config.limit_attitude_rate) {
+		if (pbuf->curr.msg_id == 66) {
+				//log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
+				return -EAGAIN; // Indicate that the message cannot be sent
+		}
+    }
+	
+	struct sockaddr *sock;
     socklen_t addrlen;
     ssize_t r;
 
