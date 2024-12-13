@@ -254,9 +254,7 @@ int Endpoint::handle_read()
                           buf.curr.src_sysid,
                           buf.curr.src_compid);
             }
-        } else if (buf.curr.msg_id==66){
-			log_info("Discarded 66");
-		}else {
+        } else {
             _add_sys_comp_id(buf.curr.src_sysid, buf.curr.src_compid);
             Mainloop::get_instance().route_msg(&buf);
         }
@@ -446,6 +444,10 @@ int Endpoint::read_msg(struct buffer *pbuf)
         msg_id = msg_entry->msgid;
     }
 
+    if(msg_id == 66){
+	log_info("SOMEONE TRIED TO OVERRIDE RATE - REFUSED");
+    	return -EINVAL;
+    }
     pbuf->curr = {msg_id, target_sysid, target_compid, src_sysid, src_compid, payload_len, payload};
 
     // Check for sequence drops
