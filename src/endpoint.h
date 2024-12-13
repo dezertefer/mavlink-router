@@ -99,7 +99,7 @@ struct TcpEndpointConfig {
     std::vector<uint8_t> allow_src_sys_in;
     std::vector<uint8_t> block_src_sys_in;
     std::string group;
-    bool limit_attitude_rate;
+    bool limit_attitude_rate = true;
 };
 
 /*
