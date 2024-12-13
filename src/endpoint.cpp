@@ -118,7 +118,7 @@ const ConfFile::OptionsTable TcpEndpoint::option_table[] = {
     {"AllowSrcSysIn",   false,  ConfFile::parse_uint8_vector,   OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, allow_src_sys_in)},
     {"BlockSrcSysIn",   false,  ConfFile::parse_uint8_vector,   OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, block_src_sys_in)},
     {"group",           false,  ConfFile::parse_stdstring,      OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, group)},
-    {"LimitAttitudeRate", false, ConfFile::parse_bool, 		OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, limit_attitude_rate)},
+    {"LimitAttitudeRate", true, ConfFile::parse_bool, 		OPTIONS_TABLE_STRUCT_FIELD(TcpEndpointConfig, limit_attitude_rate)},
     {}
 };
 // clang-format on
