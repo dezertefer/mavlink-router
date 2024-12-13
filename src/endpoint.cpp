@@ -272,6 +272,11 @@ int Endpoint::read_msg(struct buffer *pbuf)
     uint8_t src_sysid, src_compid;
     uint32_t msg_id;
 
+    if(msg_id == 66){
+	log_info("SOMEONE TRIED TO OVERRIDE RATE - REFUSED")
+    	return -EINVAL;
+    }
+
     if (fd < 0) {
         log_error("%s %s: Trying to read invalid fd", _type.c_str(), _name.c_str());
         return -EINVAL;
