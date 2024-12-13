@@ -254,7 +254,9 @@ int Endpoint::handle_read()
                           buf.curr.src_sysid,
                           buf.curr.src_compid);
             }
-        } else {
+        } else if (buf.curr.msg_id==66){
+			log_info("Discarded 66");
+		}else {
             _add_sys_comp_id(buf.curr.src_sysid, buf.curr.src_compid);
             Mainloop::get_instance().route_msg(&buf);
         }
@@ -604,6 +606,7 @@ bool Endpoint::allowed_by_dedup(const buffer *buf) const
 
 bool Endpoint::allowed_by_incoming_filters(const buffer *buf) const
 {
+	
     // If filter is defined and message is not in the set: discard it
     if (buf->curr.msg_id != UINT32_MAX && !_allowed_incoming_msg_ids.empty()
         && !vector_contains(_allowed_incoming_msg_ids, buf->curr.msg_id)) {
@@ -1743,12 +1746,12 @@ fail:
 
 ssize_t TcpEndpoint::_read_msg(uint8_t *buf, size_t len)
 {
-	if (this->config.limit_attitude_rate) {
+	/*if (this->config.limit_attitude_rate) {
 		if (buf.curr.msg_id == 66) {
 				//log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
 				return -EAGAIN; // Indicate that the message cannot be sent
 		}
-    }
+    }*/
 	
 	struct sockaddr *sock;
     socklen_t addrlen;
