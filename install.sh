@@ -28,6 +28,11 @@ sudo tee /etc/mavlink-router/main.conf > /dev/null <<EOL
    Mode=normal
    Address=127.0.0.1
    Port=14550
+   
+[UdpEndpoint GCS]
+   Mode=server
+   Address=0.0.0.0
+   Port=16200
 
 [UdpEndpoint missionPlanner]
    Mode=normal
