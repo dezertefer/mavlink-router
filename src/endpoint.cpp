@@ -1744,7 +1744,7 @@ fail:
 ssize_t TcpEndpoint::_read_msg(uint8_t *buf, size_t len)
 {
 	if (this->config.limit_attitude_rate) {
-		if (pbuf->curr.msg_id == 66) {
+		if (buf->curr.msg_id == 66) {
 				//log_info("UDP %s: Rate limit exceeded for msg_id %u", _name.c_str(), pbuf->curr.msg_id);
 				return -EAGAIN; // Indicate that the message cannot be sent
 		}
