@@ -273,7 +273,7 @@ int Endpoint::read_msg(struct buffer *pbuf)
     uint32_t msg_id;
 
     if(msg_id == 66){
-	log_info("SOMEONE TRIED TO OVERRIDE RATE - REFUSED")
+	log_info("SOMEONE TRIED TO OVERRIDE RATE - REFUSED");
     	return -EINVAL;
     }
 
